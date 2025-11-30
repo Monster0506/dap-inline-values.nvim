@@ -1,0 +1,143 @@
+*dap-inline-values.nvim.txt*     Inline variable evaluation for Neovim DAP
+                                  Author:  Monster0506 <tjraklovits@gmail.com>
+
+License: MIT
+URL:     https://github.com/monster0506/dap-inline-values.nvim
+
+==============================================================================
+INTRODUCTION                                              *dap-inline-values*
+
+DAP Inline Values is a lightweight Neovim plugin that displays variable values
+inline during debugging sessions. Position your cursor on any expression and
+press a keybind to reveal its current value in the debugger context.
+
+The plugin uses tree-sitter to intelligently detect expressions and works with
+any DAP adapter (Python, Lua, JavaScript, etc.).
+
+==============================================================================
+CONTENTS                                          *dap-inline-values-contents*
+
+    1. Setup ........................................ |dap-inline-values-setup|
+    2. Configuration ................................ |dap-inline-values-config|
+    3. Keybindings .................................. |dap-inline-values-keymaps|
+    4. Usage and behavior ........................... |dap-inline-values-usage|
+    5. Default options .............................. |dap-inline-values-defaults|
+
+==============================================================================
+1. SETUP                                                  *dap-inline-values-setup*
+
+Load the plugin with lazy.nvim:
+
+>lua
+    {
+      "monster0506/dap-inline-values.nvim",
+      dependencies = {
+        "mfussenegger/nvim-dap",
+        "nvim-treesitter/nvim-treesitter",
+      },
+      config = function()
+        require("dap_inline_values").setup({
+          filetypes = { "python", "lua", "javascript" },
+        })
+      end,
+    }
+<
+
+==============================================================================
+2. CONFIGURATION                                          *dap-inline-values-config*
+
+Options passed to `setup()` override the plugin's defaults.
+Default values are listed in |dap-inline-values-defaults|.
+
+ filetypes
+  List of filetypes where inline evaluation is enabled.
+  Example: `{ "python", "lua", "javascript" }`
+
+ keymaps
+  Table of keybindings. Currently supports:
+  - `evaluate`: Key to toggle inline value display (default: "M")
+
+ value_prefix
+  String prepended to displayed values (default: "-> ")
+  Example: Set to "→ " for a different symbol.
+
+==============================================================================
+3. KEYBINDINGS                                            *dap-inline-values-keymaps*
+
+Default key mappings (when in an enabled filetype during a debug session):
+
+    M    Evaluate expression at cursor and display value inline
+         Press again to hide the inline display
+
+You can override the keymap using:
+
+>lua
+    keymaps = {
+      evaluate = "<leader>de",
+    }
+<
+
+==============================================================================
+4. USAGE AND BEHAVIOR                                    *dap-inline-values-usage*
+
+Prerequisites:
+  1. A DAP session must be active (`:DapContinue`)
+  2. Execution must be paused at a breakpoint
+  3. The current buffer's filetype must be in your configured filetypes
+
+To use:
+  1. Position your cursor on a variable or expression
+  2. Press the evaluate keybind (default: M)
+  3. The current value appears inline next to the expression
+  4. Press the keybind again to remove the inline display
+
+Supported expressions:
+  - Simple identifiers: `x`, `name`, `result`
+  - Attributes: `person.age`, `circle.radius`
+  - Subscripts: `numbers[0]`, `data["key"]`
+  - Function calls: `len(text)`, `str(value)`
+
+If a variable is not yet defined in the current scope, the plugin displays
+an error message.
+
+Values longer than 100 characters are automatically truncated with "...".
+
+==============================================================================
+5. DEFAULT OPTIONS                                       *dap-inline-values-defaults*
+
+Below are the plugin defaults:
+
+>lua
+    {
+      filetypes = {},
+      keymaps = {
+        evaluate = "M",
+      },
+      value_prefix = "-> ",
+    }
+<
+
+==============================================================================
+REQUIREMENTS
+
+- Neovim 0.9 or later
+- nvim-dap (Debug Adapter Protocol)
+- nvim-treesitter with parsers for your language
+
+==============================================================================
+NOTES
+
+- Inline values are buffer-local and cleared when you switch buffers or stop
+  debugging.
+- The plugin uses tree-sitter to intelligently extract expressions, so
+  coverage depends on your language's parser.
+- All evaluations happen in the context of the currently paused stack frame.
+
+==============================================================================
+AUTHOR AND LICENSE
+
+Written by Monster0506 <tjraklovits@gmail.com>
+Licensed under the MIT license.
+
+==============================================================================
+vim:tw=78:ts=8:sw=4:ft=help:norl:
