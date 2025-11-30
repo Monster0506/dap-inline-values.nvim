@@ -37,6 +37,11 @@ Inline variable evaluation for Neovim DAP debugging. Hover over any expression d
 3. Press `M` to display its value inline
 4. Press `M` again to hide
 
+For detailed documentation, see:
+```vim
+:help dap-inline-values
+```
+
 ## Configuration
 
 ```lua
